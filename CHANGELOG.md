@@ -9,6 +9,7 @@ and this project adheres to [https://semver.org/](https://semver.org/).
 
 ### Added
 
+- `ApfelEngine` now reports token usage per turn and per session: every completed `Engine.send` turn yields `EngineEvent.usage` and an `EngineResponse.usage` (`TokenUsage`), counted via `TokenCounter` on macOS 26 (runtime-reported numbers remain the macOS 27 path), and the new `Engine.sessionUsage()` accumulates across the conversation (reset on `reset`). `OnDeviceEngine` now drives an injectable `GenerationBackend` protocol (production: the new `FoundationModelsBackend`, which owns the session and the `EngineTranscript` <-> SDK transcript conversion), so delta streaming, usage accounting and context rotation are unit-tested against a fake backend without the model
 - `EngineTranscript` (new additive `ApfelCore` surface): apfel's own versioned, Codable conversation-persistence format, independent of Apple's `Transcript` type. Carries instructions/prompt/response and out-of-band tool-call/tool-output entries; `encode()`/`decode(from:)` round-trip JSON, and data written by a future format version is refused with a clear `EngineTranscriptError.unsupportedVersion` instead of a misread or a crash. Unit-tested round-trips include empty, text-only, tool exchanges and unicode/newline content (#119-compatible)
 
 ### Changed
