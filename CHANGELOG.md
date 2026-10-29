@@ -7,6 +7,10 @@ and this project adheres to [https://semver.org/](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `EngineTranscript` (new additive `ApfelCore` surface): apfel's own versioned, Codable conversation-persistence format, independent of Apple's `Transcript` type. Carries instructions/prompt/response and out-of-band tool-call/tool-output entries; `encode()`/`decode(from:)` round-trip JSON, and data written by a future format version is refused with a clear `EngineTranscriptError.unsupportedVersion` instead of a misread or a crash. Unit-tested round-trips include empty, text-only, tool exchanges and unicode/newline content (#119-compatible)
+
 ### Changed
 
 - New `ApfelEngine` library target: the reusable on-device generation surface for GUI/CLI consumers. `TokenCounter` moved there (public, behavior unchanged; the macOS-27 capabilities reader is injected by the main target at startup so the engine compiles against the macOS 26 SDK), plus a data-only `Engine` protocol (`EngineEvent` delta/usage/finished stream, `EngineResponse`, `EngineModelInfo`, `EngineContextStatus` - no FoundationModels types on the surface), an `OnDeviceEngine` actor (streaming with true deltas, newest-first context rotation, `ApfelError`-classified failures) and an `EngineFactory` holding the single `#available(macOS 27, *)` seam for a future 27-specialized engine. The library is print-free: no stderr/stdout, no main-target globals. Session/ContextManager/Summarizer stay in the main target for now (minimal extraction)
